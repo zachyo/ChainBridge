@@ -1,16 +1,27 @@
 "use client";
 
-import { BellRing, MonitorCog, Network, RotateCcw, Settings2 } from "lucide-react";
+import { BellRing, MonitorCog, Network, RotateCcw, Settings2, Wallet, LogOut } from "lucide-react";
 import { Badge, Breadcrumb, Button, Card } from "@/components/ui";
 import { defaultSettings, useSettingsStore } from "@/hooks/useSettings";
 import { useToast } from "@/hooks/useToast";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
+import { useUnifiedWallet } from "@/components/wallet/UnifiedWalletProvider";
+import { truncateAddress } from "@/lib/utils";
 
 export default function SettingsPage() {
   const { settings, updateDisplay, updateNotifications, updateNetwork, resetSettings } =
     useSettingsStore();
   const { success } = useToast();
   const breadcrumbs = useBreadcrumbs();
+  const {
+    activeAddress,
+    activeChain,
+    walletName,
+    network,
+    balance,
+    isConnected,
+    disconnectActiveWallet,
+  } = useUnifiedWallet();
 
   return (
     <div className="container mx-auto max-w-5xl px-4 py-12 md:py-20">
@@ -158,6 +169,41 @@ export default function SettingsPage() {
             )}
           </div>
         </Card>
+
+        <Card variant="raised" className="p-6">
+          <SectionHeader
+            title="Connected Wallet"
+            description="Metadata for the currently connected wallet session."
+            icon={<Wallet className="h-4 w-4 text-indigo-400" />}
+          />
+
+          <div className="mt-5">
+            {isConnected && activeAddress ? (
+              <div className="space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <WalletMetaRow label="Address" value={truncateAddress(activeAddress)} />
+                  <WalletMetaRow label="Chain" value={activeChain?.toUpperCase() ?? "—"} />
+                  <WalletMetaRow label="Wallet" value={walletName ?? "—"} />
+                  <WalletMetaRow label="Network" value={network ?? "—"} />
+                  <WalletMetaRow label="Balance" value={balance ?? "—"} />
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={<LogOut className="h-4 w-4" />}
+                  onClick={() => void disconnectActiveWallet()}
+                  className="mt-2"
+                >
+                  Disconnect Wallet
+                </Button>
+              </div>
+            ) : (
+              <p className="text-sm text-text-secondary">
+                No wallet connected. Connect a wallet from the swap page or the top navigation bar.
+              </p>
+            )}
+          </div>
+        </Card>
       </div>
 
       <div className="mt-6 rounded-2xl border border-border bg-surface-overlay/40 p-4 text-sm text-text-secondary">
@@ -188,6 +234,15 @@ function SectionHeader({
         <h2 className="text-lg font-bold text-text-primary">{title}</h2>
         <p className="mt-1 text-sm text-text-secondary">{description}</p>
       </div>
+    </div>
+  );
+}
+
+function WalletMetaRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-surface-raised p-3">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-text-muted">{label}</p>
+      <p className="mt-1 text-sm font-medium text-text-primary truncate">{value}</p>
     </div>
   );
 }

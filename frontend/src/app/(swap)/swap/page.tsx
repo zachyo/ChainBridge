@@ -328,6 +328,7 @@ export default function SwapPage() {
             isStale={isQuoteStale}
             error={quoteError}
             onRefresh={() => void requestQuote()}
+            quotedAt={quoteUpdatedAt}
           />
 
           <TimelockConfigurator

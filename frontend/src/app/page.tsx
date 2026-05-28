@@ -7,7 +7,6 @@ import {
   Coins,
   ArrowRight,
   ChevronRight,
-  Globe,
   Lock,
 } from "lucide-react";
 
@@ -16,57 +15,57 @@ export const experimental_ppr = true;
 export default function Home() {
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-20 pb-24 md:pt-32 md:pb-40">
+      {/* Hero Section — product-first swap preview */}
+      <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-32">
         <div className="absolute inset-0 z-0 bg-hero-grid opacity-[0.03] dark:opacity-[0.07]" />
-        <div className="absolute -top-[10%] -left-[10%] h-[50%] w-[50%] animate-pulse-glow rounded-full bg-brand-500/10 blur-[120px]" />
-        <div className="absolute top-[20%] -right-[10%] h-[40%] w-[40%] animate-pulse-glow rounded-full bg-indigo-500/10 blur-[120px] delay-1000" />
 
         <div className="container relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center text-center">
-            <Badge variant="info" className="mb-6 animate-fade-in py-1 pl-1 pr-3">
-              <span className="mr-2 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
-                Alpha
-              </span>
-              ChainBridge v0.1 is live on Testnet
-            </Badge>
+          <div className="flex flex-col items-center gap-12 lg:flex-row lg:items-start lg:gap-16">
+            {/* Left — headline + CTAs */}
+            <div className="flex flex-col items-center text-center lg:items-start lg:text-left lg:max-w-lg">
+              <Badge variant="info" className="mb-6 animate-fade-in py-1 pl-1 pr-3">
+                <span className="mr-2 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+                  Alpha
+                </span>
+                ChainBridge v0.1 is live on Testnet
+              </Badge>
 
-            <h1 className="animate-slide-up text-balance text-5xl font-extrabold tracking-tight text-text-primary sm:text-7xl">
-              Cross-Chain Swaps, <br />
-              <span className="text-gradient">No Intermediaries.</span>
-            </h1>
+              <h1 className="animate-slide-up text-balance text-4xl font-extrabold tracking-tight text-text-primary sm:text-6xl">
+                Cross-Chain Swaps,{" "}
+                <span className="text-gradient">No Intermediaries.</span>
+              </h1>
 
-            <p className="mt-8 max-w-2xl animate-fade-in text-lg leading-relaxed text-text-secondary [animation-delay:200ms]">
-              Experience the future of decentralized finance with trustless, atomic swaps powered by
-              HTLCs. Securely trade assets between Stellar, Bitcoin, and Ethereum with zero
-              counterparty risk.
-            </p>
+              <p className="mt-6 max-w-lg animate-fade-in text-base leading-relaxed text-text-secondary [animation-delay:200ms]">
+                Trustless, atomic swaps powered by HTLCs. Trade assets between Stellar, Bitcoin,
+                and Ethereum with zero counterparty risk.
+              </p>
 
-            <div className="mt-10 flex animate-fade-in flex-wrap items-center justify-center gap-4 [animation-delay:400ms]">
-              <Link href="/swap" prefetch={true}>
-                <Button size="lg" className="rounded-2xl px-8 shadow-glow-md">
-                  Launch Swap Wizard
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/protocol" prefetch={true}>
-                <Button variant="outline" size="lg" className="rounded-2xl px-8">
-                  Explore Protocol
-                </Button>
-              </Link>
-              <Link href="/about" prefetch={true}>
-                <Button variant="secondary" size="lg" className="rounded-2xl px-8">
-                  How it Works
-                </Button>
-              </Link>
+              <div className="mt-8 flex animate-fade-in flex-wrap items-center gap-3 [animation-delay:400ms]">
+                <Link href="/swap" prefetch={true}>
+                  <Button size="lg" className="rounded-2xl px-8 shadow-glow-md">
+                    Start Swapping
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="/about" prefetch={true}>
+                  <Button variant="secondary" size="lg" className="rounded-2xl px-8">
+                    How it Works
+                  </Button>
+                </Link>
+              </div>
+
+              {/* Ecosystem Stats */}
+              <div className="mt-10 grid w-full grid-cols-2 gap-3 animate-fade-in [animation-delay:600ms] sm:grid-cols-4 lg:grid-cols-2">
+                <Stat label="Total Volume" value="$2.4M+" />
+                <Stat label="Avg. Speed" value="~1.5m" />
+                <Stat label="Chain Support" value="3+" />
+                <Stat label="Security Audit" value="Verifying" />
+              </div>
             </div>
 
-            {/* Ecosystem Stats */}
-            <div className="mt-20 grid w-full max-w-4xl grid-cols-2 gap-4 md:grid-cols-4 animate-fade-in [animation-delay:600ms]">
-              <Stat label="Total Volume" value="$2.4M+" />
-              <Stat label="Avg. Speed" value="~1.5m" />
-              <Stat label="Chain Support" value="3+" />
-              <Stat label="Security Audit" value="Verifying" />
+            {/* Right — compact swap preview panel */}
+            <div className="w-full max-w-sm animate-fade-in [animation-delay:300ms] lg:flex-1">
+              <SwapPreviewPanel />
             </div>
           </div>
         </div>
@@ -130,17 +129,91 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="relative h-48 w-48 shrink-0 md:h-64 md:w-64">
-              <div className="absolute inset-0 animate-spin-slow rounded-full border-2 border-dashed border-brand-500/20" />
-              <div className="absolute inset-4 animate-reverse-spin rounded-full border-2 border-dashed border-indigo-500/20" />
-              <div className="flex h-full w-full items-center justify-center">
-                <ArrowRightLeft className="h-20 w-20 text-brand-500/40" />
-              </div>
+            <div className="flex h-48 w-48 shrink-0 items-center justify-center md:h-64 md:w-64">
+              <ArrowRightLeft className="h-20 w-20 text-brand-500/40" />
             </div>
           </Card>
         </div>
       </section>
     </div>
+  );
+}
+
+function SwapPreviewPanel() {
+  return (
+    <Card variant="raised" className="overflow-hidden shadow-glow-sm">
+      <div className="border-b border-border bg-surface-overlay/60 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <ArrowRightLeft className="h-4 w-4 text-brand-500" />
+          <span className="text-sm font-semibold text-text-primary">Swap Preview</span>
+        </div>
+        <Badge variant="info" className="text-[10px]">Testnet</Badge>
+      </div>
+
+      <div className="p-4 space-y-3">
+        {/* From */}
+        <div className="rounded-xl border border-border bg-surface-overlay/40 p-3">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-text-muted mb-2">From</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-7 w-7 rounded-full bg-brand-500/20 flex items-center justify-center">
+                <span className="text-[10px] font-bold text-brand-500">XLM</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-text-primary">Stellar</p>
+                <p className="text-[10px] text-text-muted">Lumens</p>
+              </div>
+            </div>
+            <span className="text-lg font-bold text-text-primary">100</span>
+          </div>
+        </div>
+
+        {/* Arrow */}
+        <div className="flex justify-center">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface-overlay">
+            <ArrowRightLeft className="h-3.5 w-3.5 text-brand-500" />
+          </div>
+        </div>
+
+        {/* To */}
+        <div className="rounded-xl border border-border bg-surface-overlay/40 p-3">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-text-muted mb-2">To</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-7 w-7 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <span className="text-[10px] font-bold text-amber-500">BTC</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-text-primary">Bitcoin</p>
+                <p className="text-[10px] text-text-muted">Bitcoin</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <span className="text-lg font-bold text-emerald-400">≈ 0.0021</span>
+              <p className="text-[10px] text-text-muted">estimated</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Rate row */}
+        <div className="flex items-center justify-between rounded-xl border border-border bg-surface-overlay/40 px-3 py-2 text-xs">
+          <span className="text-text-muted">Rate</span>
+          <span className="font-medium text-text-primary">1 XLM ≈ 0.0000213 BTC</span>
+        </div>
+
+        {/* CTA */}
+        <Link href="/swap" prefetch={true}>
+          <Button className="w-full rounded-xl" size="sm">
+            Open Swap
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
+
+        <p className="text-center text-[10px] text-text-muted">
+          Trustless · Atomic · Self-custody
+        </p>
+      </div>
+    </Card>
   );
 }
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 
 import { Badge, Button, Card } from "@/components/ui";
@@ -14,6 +15,31 @@ interface QuotePreviewCardProps {
   isStale: boolean;
   error: string | null;
   onRefresh: () => void;
+  quotedAt?: number | null;
+}
+
+function useRelativeTime(timestamp: number | null | undefined): string {
+  const [label, setLabel] = useState("just now");
+
+  useEffect(() => {
+    if (!timestamp) {
+      setLabel("just now");
+      return;
+    }
+
+    function update() {
+      const seconds = Math.floor((Date.now() - timestamp!) / 1000);
+      if (seconds < 10) setLabel("just now");
+      else if (seconds < 60) setLabel(`${seconds}s ago`);
+      else setLabel(`${Math.floor(seconds / 60)}m ago`);
+    }
+
+    update();
+    const id = setInterval(update, 5000);
+    return () => clearInterval(id);
+  }, [timestamp]);
+
+  return label;
 }
 
 function sumComponentsByName(
@@ -59,7 +85,9 @@ export function QuotePreviewCard({
   isStale,
   error,
   onRefresh,
+  quotedAt,
 }: QuotePreviewCardProps) {
+  const updatedLabel = useRelativeTime(quote ? (quotedAt ?? null) : null);
   const networkFees = quote ? sumComponentsByName(quote, ["network_fee"]) : [];
   const protocolFees = quote ? sumComponentsByName(quote, ["contract_fee", "relayer_fee"]) : [];
 
@@ -90,7 +118,13 @@ export function QuotePreviewCard({
       <div className="mb-3 flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold text-text-primary">Quote Preview</p>
-          <p className="text-xs text-text-muted">Expected output, rate, and fee breakdown</p>
+          {quote ? (
+            <p className={`text-xs ${isStale ? "text-amber-400" : "text-text-muted"}`}>
+              Updated {updatedLabel}
+            </p>
+          ) : (
+            <p className="text-xs text-text-muted">Expected output, rate, and fee breakdown</p>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {isStale && <Badge variant="warning">Stale Quote</Badge>}
@@ -100,6 +134,8 @@ export function QuotePreviewCard({
             icon={<RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />}
             onClick={onRefresh}
             disabled={isLoading}
+            aria-label="Refresh quote"
+            aria-keyshortcuts="r"
           >
             Refresh
           </Button>
