@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { BookmarkPlus, Clock3, Filter, RefreshCw, Search, Trash2, XCircle } from "lucide-react";
+import { BookmarkPlus, Clock3, Filter, RefreshCw, Search, Trash2, X, XCircle } from "lucide-react";
 
 import { Button, Card, EmptyState, Input, ToastContainer } from "@/components/ui";
 import { DEMO_ORDER_OWNER, useMockOrders, useOrderBookStore } from "@/hooks/useOrderBook";
@@ -303,6 +303,71 @@ export default function OrdersPage() {
         </div>
       </Card>
 
+      {/* Issue #397: Saved presets row */}
+      {savedPresets.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <span className="shrink-0 text-xs text-text-muted">Presets:</span>
+          {savedPresets.map((preset) => (
+            <div
+              key={preset.name}
+              className="inline-flex items-center overflow-hidden rounded-full border border-border bg-surface-raised"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery(preset.query);
+                  setStatusFilter(preset.status);
+                  setChainFilter(preset.chain);
+                  setAssetFilter(preset.asset);
+                  setRangeFilter(preset.range);
+                }}
+                className="px-3 py-1 text-xs text-text-primary hover:bg-surface-overlay"
+              >
+                {preset.name}
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  setSavedPresets((curr) => curr.filter((p) => p.name !== preset.name))
+                }
+                aria-label={`Delete ${preset.name} preset`}
+                className="px-2 py-1 text-text-muted hover:bg-surface-overlay hover:text-text-primary"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Issue #396: Active filter chips */}
+      {(query || statusFilter !== "all" || chainFilter !== "all" || assetFilter !== "all" || rangeFilter !== "all") && (
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {query && (
+            <FilterChip label={`Search: ${query}`} onRemove={() => setQuery("")} />
+          )}
+          {statusFilter !== "all" && (
+            <FilterChip label={`Status: ${statusFilter}`} onRemove={() => setStatusFilter("all")} />
+          )}
+          {chainFilter !== "all" && (
+            <FilterChip label={`Chain: ${chainFilter}`} onRemove={() => setChainFilter("all")} />
+          )}
+          {assetFilter !== "all" && (
+            <FilterChip label={`Asset: ${assetFilter}`} onRemove={() => setAssetFilter("all")} />
+          )}
+          {rangeFilter !== "all" && (
+            <FilterChip label={`Range: ${rangeFilter}`} onRemove={() => setRangeFilter("all")} />
+          )}
+          <button
+            type="button"
+            onClick={() => { setQuery(""); clearAdvancedFilters(); }}
+            className="text-xs text-text-muted underline-offset-2 hover:text-text-primary hover:underline"
+          >
+            Clear all
+          </button>
+        </div>
+      )}
+
       <div className="mt-6 space-y-4">
         {visibleOrders.length === 0 ? (
           <EmptyState
@@ -580,5 +645,21 @@ function StatCard({ label, value }: { label: string; value: string }) {
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</p>
       <p className="mt-2 text-3xl font-black text-text-primary">{value}</p>
     </div>
+  );
+}
+
+function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface-raised px-3 py-1 text-xs text-text-primary">
+      {label}
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={`Remove ${label} filter`}
+        className="text-text-muted hover:text-text-primary"
+      >
+        <X className="h-3 w-3" />
+      </button>
+    </span>
   );
 }

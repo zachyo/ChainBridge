@@ -263,7 +263,7 @@ export function OrderListTable({
                   <tr key={`loading-${index}`}>
                     {resolvedColumns.map((column) => (
                       <td key={`${column.key}-${index}`} className={cn(column.className, "py-5")}>
-                        <div className="h-4 w-full animate-pulse rounded bg-surface-overlay/80" />
+                        <div className="h-4 w-full motion-safe:animate-pulse motion-reduce:opacity-50 rounded bg-surface-overlay/80" />
                       </td>
                     ))}
                   </tr>
@@ -328,7 +328,7 @@ export function OrderListTable({
           loadingRows.map((_, index) => (
             <div
               key={`loading-card-${index}`}
-              className="h-48 w-full animate-pulse rounded-2xl bg-surface-overlay/80 border border-border"
+              className="h-48 w-full motion-safe:animate-pulse motion-reduce:opacity-50 rounded-2xl bg-surface-overlay/80 border border-border"
             />
           ))
         ) : paginatedOrders.length > 0 ? (

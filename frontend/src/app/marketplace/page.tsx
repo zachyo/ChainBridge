@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { OrderBookList } from "@/components/marketplace/OrderBookList";
 import { OrderTakeModal } from "@/components/marketplace/OrderTakeModal";
@@ -8,9 +8,8 @@ import { DepthChart } from "@/components/marketplace/DepthChart";
 import { useOrderBookStore, useMockOrders } from "@/hooks/useOrderBook";
 import { useTransactionStore } from "@/hooks/useTransactions";
 import { Order, OrderStatus, TransactionStatus } from "@/types";
-import { Button } from "@/components/ui";
-import { TrendingUp, Info, Plus } from "lucide-react";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { Badge, Button } from "@/components/ui";
+import { ShoppingBag, TrendingUp, Info, Plus, ExternalLink, RefreshCw } from "lucide-react";
 import {
   buildCompletedLifecycle,
   buildTransactionLifecycle,
@@ -18,6 +17,7 @@ import {
 } from "@/lib/transactionLifecycle";
 import { getExplorerUrl } from "@/lib/explorers";
 import { useUnifiedWallet } from "@/components/wallet/UnifiedWalletProvider";
+import { formatTokenAmount } from "@/lib/format";
 
 function fundingChainForOrder(order: Order) {
   return order.side === "buy" ? order.chainOut : order.chainIn;
@@ -104,6 +104,14 @@ export default function MarketplacePage() {
     updateOrder(order.id, { status: OrderStatus.FILLED });
   };
 
+  const vol24h = useMemo(() => {
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    const total = orders
+      .filter((o) => new Date(o.timestamp).getTime() > cutoff)
+      .reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
+    return formatTokenAmount(total, { notation: "compact", maximumFractionDigits: 1 });
+  }, [orders]);
+
   const closeDrawer = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
@@ -111,25 +119,39 @@ export default function MarketplacePage() {
   };
 
   return (
-    <div className="animate-fade-in">
-      <PageHeader
-        title="Order Book"
-        subtitle="Browse active cross-chain swap offers or create your own. All trades are protected by trustless hash-timelock contracts."
-        breadcrumbs={[
-          { label: "Home", href: "/" },
-          { label: "Marketplace", isCurrent: true },
-        ]}
-        primaryAction={
-          <Button variant="primary" className="h-10 px-5 shadow-glow-sm" icon={<Plus size={16} />}>
-            Create Order
-          </Button>
-        }
-        secondaryActions={[
-          <Link key="my-orders" href="/orders">
-            <Button variant="secondary" className="h-10 px-5">My Orders</Button>
-          </Link>,
-        ]}
-      />
+    <div className="container mx-auto max-w-7xl px-4 py-12 md:py-20 animate-fade-in">
+      <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-3xl">
+          <div className="mb-4 flex items-center gap-2">
+            <Badge
+              variant="info"
+              className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+            >
+              P2P Marketplace
+            </Badge>
+          </div>
+          <h1 className="text-4xl font-extrabold text-text-primary tracking-tight sm:text-6xl">
+            Order Book
+          </h1>
+          <p className="mt-6 text-xl text-text-secondary leading-relaxed">
+            Browse active cross-chain swap offers or create your own. All trades are protected by
+            trustless hash-timelock contracts.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <Link href="/orders">
+            <Button variant="secondary" className="h-12 px-6">
+              My Orders
+            </Button>
+          </Link>
+          <Link href="/orders/new">
+            <Button variant="primary" className="h-12 px-6 shadow-glow-md" icon={<Plus size={18} />}>
+              Create Order
+            </Button>
+          </Link>
+        </div>
+      </div>
 
       <div className="pt-8 grid grid-cols-1 gap-8 lg:grid-cols-4">
         <div className="lg:col-span-3 space-y-8">
@@ -148,7 +170,7 @@ export default function MarketplacePage() {
             <div className="mt-4 grid grid-cols-2 gap-4 text-center">
               <div>
                 <p className="text-[10px] font-bold text-text-muted uppercase">24h Vol</p>
-                <p className="text-lg font-black text-text-primary">$1.2M</p>
+                <p className="text-lg font-black text-text-primary">{vol24h}</p>
               </div>
               <div>
                 <p className="text-[10px] font-bold text-text-muted uppercase">Active</p>
@@ -170,13 +192,14 @@ export default function MarketplacePage() {
                   Taking an order creates an atomic swap. You'll lock funds on the source chain
                   first, then the maker will lock on the destination.
                 </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mt-2 px-0 text-brand-500 hover:bg-transparent h-auto"
+                <Link
+                  href="/protocol#htlc"
+                  className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-brand-500 hover:underline"
+                  aria-label="Learn more about Hash Timelock Contracts on the protocol page"
                 >
-                  Learn more about HTLCs →
-                </Button>
+                  Learn more about HTLCs
+                  <ExternalLink size={12} aria-hidden="true" />
+                </Link>
               </div>
             </div>
           </div>

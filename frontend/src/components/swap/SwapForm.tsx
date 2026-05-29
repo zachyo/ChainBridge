@@ -378,6 +378,37 @@ export default function SwapForm() {
         amount={form.amount ? parseFloat(form.amount) : undefined}
       />
 
+      {/* Route summary card (#390) */}
+      <div className="rounded-xl border border-border bg-surface-overlay/40 p-4 text-sm space-y-2">
+        <p className="font-semibold text-text-primary text-xs uppercase tracking-wider mb-2">Route Summary</p>
+        <div className="flex justify-between">
+          <span className="text-text-muted">From</span>
+          <span className="font-medium text-text-primary">
+            {sourceChainInfo?.name ?? "—"} · {form.token || "—"}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-text-muted">To</span>
+          <span className="font-medium text-text-primary">
+            {destChainInfo?.name ?? "—"}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-text-muted">Amount</span>
+          <span className="font-mono font-medium text-text-primary">
+            {form.amount || "—"} {form.token || ""}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-text-muted">Timelock</span>
+          <span className="font-medium text-text-primary">{form.timelockHours}h</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-text-muted">Network fee</span>
+          <span className="font-mono text-text-secondary">{ESTIMATED_FEES[form.sourceChain]}</span>
+        </div>
+      </div>
+
       {/* Validation error */}
       {form.sourceChain === form.destChain && (
         <p className="text-red-500 text-sm mb-4">
